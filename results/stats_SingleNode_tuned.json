@@ -1,0 +1,7 @@
+{
+  "setup": "SingleNode",
+  "tuning": true,
+  "duration": 1.85,
+  "memory": "193.1MiB",
+  "timestamp": "Wed May  7 12:10:47 2025"
+}

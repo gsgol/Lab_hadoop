@@ -1,0 +1,50 @@
+version: '3'
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ./Online_Retail_Sample_100k.csv:/Online_Retail_Sample_100k.csv
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  spark:
+    image: bitnami/spark:latest
+    container_name: spark
+    depends_on:
+      - namenode
+    volumes:
+      - ./Online_Retail_Sample_100k.csv:/Online_Retail_Sample_100k.csv
+      - ./spark_app.py:/app/spark_app.py
+    environment:
+      - SPARK_MASTER=spark://spark:7077
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
